@@ -48,7 +48,7 @@ Contextual info can also be tacked on at while logging:
 ```ruby
 logger.info "Logged out.", user_id: user.id
 # => "Logged out. {:user_id=>123}"
-# => {"message": "Logged out.", "user_id": 123}"
+# => {"message": "Logged out.", "user_id": 123}
 ```
 
 Contextual info whose keys are prefixed with an underscore, will only
