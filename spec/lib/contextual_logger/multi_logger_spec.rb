@@ -23,7 +23,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "context contains the info added for all severities" do
       [:debug, :info, :warn, :error, :fatal].each do |severity|
-        expect(subject.context(:severity)).to include(foo: "value", bar: "other")
+        expect(subject.context(severity)).to include(foo: "value", bar: "other")
       end
     end
   end
