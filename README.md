@@ -21,8 +21,8 @@ Or install it yourself as:
 ## Usage
 
 The MultiLogger class wraps logging to both a standard Logger instance
-and a LogstashLogger instance at the same time.
-
+and a LogstashLogger instance at the same time. Both logger instances
+must be setup independently in advance.
 ```ruby
 logger = ContextualLogger::MultiLogger.new(LOGGER, LOGSTASH)
 logger.info "Hello, world!"
