@@ -51,7 +51,7 @@ logger.info "Logged out.", user_id: user.id
 # => {"message": "Logged out.", "user_id": 123}
 ```
 
-Contextual info whose keys are prefixed with an underscore, will only
+Contextual info with keys prefixed with an underscore will only
 be added to log events with severities of `error` or `fatal`:
 ```ruby
 logger[:_request_url] = request.request_url
@@ -62,5 +62,5 @@ logger.info "Starting."
 
 logger.error "Failed!"
 # => "Failed! {:_request_url=>'http://localhost:9292/foo/bar'}
-# => {"message": "Failed!", "request_url": "http://localhost:9292/foo/bar"}
+# => {"message": "Failed!", "_request_url": "http://localhost:9292/foo/bar"}
 ```
