@@ -20,9 +20,9 @@ module ContextualLogger
           args[:_exception] = "#{ex.class.name}: #{ex.message}"
         end
 
-        if (@logger && @logger.send("#{severity}?") ||
-            @logstash && @logstash.send("#{severity}?"))
-          message = (message || "") << block.call if block
+        if block && ((@logger && @logger.send("#{severity}?") ||
+            @logstash && @logstash.send("#{severity}?")))
+          message = (message || "") << block.call
         end
 
         if @logger && @logger.send("#{severity}?")
