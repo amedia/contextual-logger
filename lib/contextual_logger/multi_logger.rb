@@ -34,6 +34,11 @@ module ContextualLogger
           @logstash.send severity, { message: message }.merge(args)
         end
       end
+
+      define_method("#{severity}?") do
+        (@logger && @logger.send("#{severity}?")) ||
+          (@logstash && @logstash.send("#{severity}?"))
+      end
     end
 
     def clear_context
