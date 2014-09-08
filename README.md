@@ -28,7 +28,10 @@ For each example below, the output being logged to each instance will be
 shown underneath the code example.
 
 ```ruby
-logger = ContextualLogger::MultiLogger.new(LOGGER, LOGSTASH)
+FILELOGGER = Logger.new(...)
+LOGSTASH   = LogStashLogger.new(...)
+
+logger = ContextualLogger::MultiLogger.new(FILELOGGER, LOGSTASH)
 
 logger.info "Hello, world!"
 # => "Hello, world!"
