@@ -5,10 +5,10 @@ module ContextualLogger
   class MultiLogger
 
     def initialize(logger = nil, logstash = nil)
-      @logger     = logger
-      @logstash   = logstash
-      @context    = {}
-      @errcontext = {}
+      @logger = logger
+      @logstash = logstash
+      @context = {}
+      @error_context = {}
     end
 
     [:debug, :info, :warn, :error, :fatal].each do |severity|
@@ -16,8 +16,8 @@ module ContextualLogger
 
         args.merge! context(severity)
 
-        if (ex = args[:_exception]).is_a?(Exception)
-          args[:_exception] = "#{ex.class.name}: #{ex.message}"
+        if (ex = args[:exception]).is_a?(Exception)
+          args[:exception] = "#{ex.class.name}: #{ex.message}"
         end
 
         if block && ((@logger && @logger.send("#{severity}?") ||
@@ -37,18 +37,18 @@ module ContextualLogger
       end
     end
 
-    def []=(key, value)
-      if key.to_s[0] == '_'
-        @errcontext[key] = value
-      else
-        @context[key] = value
-      end
+    def add_context(hash)
+      @context.merge! hash
+    end
+
+    def add_error_context(hash)
+      @error_context.merge! hash
     end
 
     def context(severity)
       case severity
       when :error, :fatal
-        @context.merge(@errcontext)
+        @context.merge(@error_context)
       else
         @context
       end

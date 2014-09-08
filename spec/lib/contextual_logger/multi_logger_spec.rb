@@ -16,10 +16,9 @@ describe ContextualLogger::MultiLogger do
     ContextualLogger::MultiLogger.new(logger, logstash)
   end
 
-  context "adding info to context" do
+  context "#add_context" do
     before do
-      subject[:foo] = "value"
-      subject[:bar] = "other"
+      subject.add_context foo: "value", bar: "other"
     end
     it "context contains the info added for all severities" do
       [:debug, :info, :warn, :error, :fatal].each do |severity|
@@ -28,27 +27,27 @@ describe ContextualLogger::MultiLogger do
     end
   end
 
-  context "adding info to context with underscore-prefixed keys" do
+  context "#add_error_context" do
     before do
-      subject[:_foo] = "value"
-      subject[:_bar] = "other"
+      subject.add_error_context foo: "value"
+      subject.add_error_context bar: "other"
     end
     it "context contains the info added for error severities" do
       [:error, :fatal].each do |severity|
-        expect(subject.context(severity)).to include(_foo: "value", _bar: "other")
+        expect(subject.context(severity)).to include(foo: "value", bar: "other")
       end
     end
     it "context does not contain the info added for non-error severities" do
       [:debug, :info, :warn].each do |severity|
-        expect(subject.context(severity)).not_to include(:_foo, :_bar)
+        expect(subject.context(severity)).not_to include(:foo, :bar)
       end
     end
   end
 
   context "logging with non-error severity" do
     before do
-      subject[:foo]  = "value"
-      subject[:_bar] = "other"
+      subject.add_context foo: "value"
+      subject.add_error_context bar: "other"
       subject.info "Hello World"
     end
     it "passes message and context on to logger" do
@@ -61,32 +60,32 @@ describe ContextualLogger::MultiLogger do
 
   context "logging with error severity" do
     before do
-      subject[:foo]  = "value"
-      subject[:_bar] = "other"
+      subject.add_context foo: "value"
+      subject.add_error_context bar: "other"
       subject.error "Oh no!"
     end
-    it "passes message and context on to logger" do
+    it "passes message, context and error context on to logger" do
       expect(logger).to have_received(:error).
-        with('Oh no! {:foo=>"value", :_bar=>"other"}').once
+        with('Oh no! {:foo=>"value", :bar=>"other"}').once
     end
-    it "passes message and context on to logstash" do
+    it "passes message, context and error context on to logstash" do
       expect(logstash).to have_received(:error).
-        with(message: 'Oh no!', foo: 'value', _bar: 'other').once
+        with(message: 'Oh no!', foo: 'value', bar: 'other').once
     end
   end
 
-  context "logging with error severity and _exception info in context" do
+  context "logging with error severity and exception info in context" do
     before do
-      subject[:_exception] = StandardError.new("Oopsie!")
+      subject.add_error_context exception: StandardError.new("Oopsie!")
       subject.error "Oh no!"
     end
     it "passes message and exception info on to logger" do
       expect(logger).to have_received(:error).
-        with('Oh no! {:_exception=>"StandardError: Oopsie!"}').once
+        with('Oh no! {:exception=>"StandardError: Oopsie!"}').once
     end
     it "passes message and exception info on to logstash" do
       expect(logstash).to have_received(:error).
-        with(message: 'Oh no!', _exception: "StandardError: Oopsie!").once
+        with(message: 'Oh no!', exception: "StandardError: Oopsie!").once
     end
   end
 

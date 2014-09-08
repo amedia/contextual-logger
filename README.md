@@ -37,30 +37,30 @@ logger.info "Hello, world!"
 
 Contextual info can be added anywhere before the logging is performed:
 ```ruby
-logger[:user_id] = user.id
+logger.add_context user_id: user.id
 
 logger.info "User logged in."
 # => "User logged in. {:user_id=>123}"
 # => {"message": "User logged in.", "user_id": 123}
 ```
 
-Contextual info can also be tacked on at while logging:
+Contextual info can also be tacked on directly when logging:
 ```ruby
 logger.info "Logged out.", user_id: user.id
 # => "Logged out. {:user_id=>123}"
 # => {"message": "Logged out.", "user_id": 123}
 ```
 
-Contextual info with keys prefixed with an underscore will only
-be added to log events with severities of `error` or `fatal`:
+Info added to the _error context_ will only be appended to log events
+with severities of `error` or `fatal`:
 ```ruby
-logger[:_request_url] = request.request_url
+logger.add_error_context request_url: request.request_url
 
 logger.info "Starting."
 # => "Starting."
 # => {"message": "Starting."}
 
 logger.error "Failed!"
-# => "Failed! {:_request_url=>'http://localhost:9292/foo/bar'}
-# => {"message": "Failed!", "_request_url": "http://localhost:9292/foo/bar"}
+# => "Failed! {:request_url=>'http://localhost:9292/foo/bar'}
+# => {"message": "Failed!", "request_url": "http://localhost:9292/foo/bar"}
 ```
