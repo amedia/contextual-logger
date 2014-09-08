@@ -20,7 +20,7 @@ describe ContextualLogger::MultiLogger do
     before do
       subject.add_context foo: "value", bar: "other"
     end
-    it "context contains the info added for all severities" do
+    it "adds info to the context that is visible for all severities" do
       [:debug, :info, :warn, :error, :fatal].each do |severity|
         expect(subject.context(severity)).to include(foo: "value", bar: "other")
       end
@@ -32,14 +32,27 @@ describe ContextualLogger::MultiLogger do
       subject.add_error_context foo: "value"
       subject.add_error_context bar: "other"
     end
-    it "context contains the info added for error severities" do
+    it "adds info to the context that is visible for error severities" do
       [:error, :fatal].each do |severity|
         expect(subject.context(severity)).to include(foo: "value", bar: "other")
       end
     end
-    it "context does not contain the info added for non-error severities" do
+    it "adds info to the context that is not visible for non-error severities" do
       [:debug, :info, :warn].each do |severity|
         expect(subject.context(severity)).not_to include(:foo, :bar)
+      end
+    end
+  end
+
+  context "#clear_context" do
+    before do
+      subject.add_context foo: "value", bar: "other"
+      subject.add_error_context baz: "value", quux: "other"
+      subject.clear_context
+    end
+    it "removes all existing context" do
+      [:info, :error].each do |severity|
+        expect(subject.context(severity)).to be_empty
       end
     end
   end

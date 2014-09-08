@@ -5,10 +5,9 @@ module ContextualLogger
   class MultiLogger
 
     def initialize(logger = nil, logstash = nil)
-      @logger = logger
+      @logger   = logger
       @logstash = logstash
-      @context = {}
-      @error_context = {}
+      clear_context
     end
 
     [:debug, :info, :warn, :error, :fatal].each do |severity|
@@ -35,6 +34,11 @@ module ContextualLogger
           @logstash.send severity, { message: message }.merge(args)
         end
       end
+    end
+
+    def clear_context
+      @context = {}
+      @error_context = {}
     end
 
     def add_context(hash)

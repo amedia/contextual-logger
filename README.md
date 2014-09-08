@@ -67,3 +67,8 @@ logger.error "Failed!"
 # => "Failed! {:request_url=>'http://localhost:9292/foo/bar'}
 # => {"message": "Failed!", "request_url": "http://localhost:9292/foo/bar"}
 ```
+
+The context can be emptied by request:
+```ruby
+logger.clear_context
+```
