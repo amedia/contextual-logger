@@ -38,7 +38,7 @@ logger.info "Hello, world!"
 # => {"message": "Hello, world!"}
 ```
 
-Contextual info (related to the current HTTP request) can be added anywhere before the logging is performed:
+Contextual info can be added anywhere before the logging is performed:
 ```ruby
 logger.add_context user_id: user.id
 
