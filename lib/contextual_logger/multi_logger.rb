@@ -19,6 +19,12 @@ module ContextualLogger
           args[:exception] = "#{ex.class.name}: #{ex.message}"
         end
 
+        if args[:source] == true
+          source = caller[0]
+          source.sub!(/^.*?\/#{$app_name}\//, '') if defined?($app_name)
+          args[:source] = source
+        end
+
         if block && ((@logger && @logger.send("#{severity}?") ||
             @logstash && @logstash.send("#{severity}?")))
           message = (message || "") << block.call

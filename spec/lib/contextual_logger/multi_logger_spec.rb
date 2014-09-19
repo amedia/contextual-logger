@@ -102,6 +102,17 @@ describe ContextualLogger::MultiLogger do
     end
   end
 
+  context "logging with source requested in context" do
+    before do
+      subject.add_context source: true
+      subject.info "Yo!"
+    end
+    it "passes message and source info on to logger" do
+      expect(logger).to have_received(:info).
+        with(/Yo! {:source=>"#{__FILE__}:#{__LINE__ - 4}:in/).once
+    end
+  end
+
   context "logging with a block" do
     before do
       subject.info { "Foobar" }
