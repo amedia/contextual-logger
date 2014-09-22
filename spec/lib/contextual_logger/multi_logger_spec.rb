@@ -64,7 +64,7 @@ describe ContextualLogger::MultiLogger do
       subject.info "Hello World"
     end
     it "passes message and context on to logger" do
-      expect(logger).to have_received(:info).with('Hello World {:foo=>"value"}').once
+      expect(logger).to have_received(:info).with('Hello World {foo: "value"}').once
     end
     it "passes message and context on to logstash" do
       expect(logstash).to have_received(:info).with(message: 'Hello World', foo: 'value').once
@@ -79,7 +79,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message, context and error context on to logger" do
       expect(logger).to have_received(:error).
-        with('Oh no! {:foo=>"value", :bar=>"other"}').once
+        with('Oh no! {foo: "value", bar: "other"}').once
     end
     it "passes message, context and error context on to logstash" do
       expect(logstash).to have_received(:error).
@@ -94,7 +94,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message and exception info on to logger" do
       expect(logger).to have_received(:error).
-        with('Oh no! {:exception=>"StandardError: Oopsie!"}').once
+        with('Oh no! {exception: "StandardError: Oopsie!"}').once
     end
     it "passes message and exception info on to logstash" do
       expect(logstash).to have_received(:error).
@@ -109,7 +109,20 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message and source info on to logger" do
       expect(logger).to have_received(:info).
-        with(/Yo! {:source=>"#{__FILE__}:#{__LINE__ - 4}:in/).once
+        with("Yo! {source: \"#{__FILE__}:#{__LINE__ - 4}\"}").once
+    end
+  end
+
+  context "logging with source requested in context and $app_name set" do
+    before do
+      $app_name = 'contextual-logger'
+      subject.add_context source: true
+      subject.info "Yo!"
+      $app_name = nil
+    end
+    it "passes message and source info on to logger, app directory truncated" do
+      expect(logger).to have_received(:info).
+        with("Yo! {source: \"spec/lib/contextual_logger/multi_logger_spec.rb:#{__LINE__ - 5}\"}").once
     end
   end
 

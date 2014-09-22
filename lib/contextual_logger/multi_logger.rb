@@ -20,9 +20,9 @@ module ContextualLogger
         end
 
         if args[:source] == true
-          source = caller[0]
-          source.sub!(/^.*?\/#{$app_name}\//, '') if defined?($app_name)
-          args[:source] = source
+          file, line, _ = caller[0].split(':')
+          file.sub!(%r{^.*?/#{$app_name}/}, '') if $app_name
+          args[:source] = [file, line].join(':')
         end
 
         if block && ((@logger && @logger.send("#{severity}?") ||
@@ -32,7 +32,9 @@ module ContextualLogger
 
         if @logger && @logger.send("#{severity}?")
           line = message.dup
-          line << " " << args.inspect unless args.empty?
+          unless args.empty?
+            line << ' {' << args.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') << '}'
+          end
           @logger.send severity, line
         end
 
