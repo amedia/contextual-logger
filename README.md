@@ -73,7 +73,7 @@ The context can be emptied by request:
 logger.clear_context
 ```
 
-Exceptions can be added to the context and will be automatically formatted:
+Exception objects can be added to the context and will be automatically formatted:
 ```ruby
 begin
   raise SomeError, "Oops!"
