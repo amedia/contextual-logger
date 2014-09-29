@@ -72,3 +72,14 @@ The context can be emptied by request:
 ```ruby
 logger.clear_context
 ```
+
+Exceptions can be added to the context and will be automatically formatted:
+```ruby
+begin
+  raise SomeError, "Oops!"
+rescue SomeError => err
+  logger.error "Failed.", exception: err
+end
+```
+# => "Failed. {exception: "SomeError: Oops!"}
+# => {"message": "Failed.", exception: "StandardError: Oopsie!"}
