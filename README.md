@@ -81,5 +81,5 @@ rescue SomeError => err
   logger.error "Failed.", exception: err
 end
 # => "Failed. {exception: "SomeError: Oops!"}
-# => {"message": "Failed.", exception: "StandardError: Oopsie!"}
+# => {"message": "Failed.", exception: "SomeError: Oopsie!"}
 ```
