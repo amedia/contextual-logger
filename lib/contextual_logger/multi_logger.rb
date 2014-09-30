@@ -10,6 +10,11 @@ module ContextualLogger
       clear_context
     end
 
+    def initialize_clone(other)
+      super
+      clear_context
+    end
+
     [:debug, :info, :warn, :error, :fatal].each do |severity|
       define_method(severity) do |message = nil, args = {}, &block|
 
