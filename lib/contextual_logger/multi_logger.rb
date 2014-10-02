@@ -24,8 +24,9 @@ module ContextualLogger
           args[:exception] = "#{ex.class.name}: #{ex.message}"
         end
 
-        if args[:source] == true
-          file, line, _ = caller[0].split(':')
+        if args[:source]
+          level = (args[:source] == true ? 0 : args[:source].to_i)
+          file, line, _ = caller[level].split(':')
           file.sub!(%r{^.*?/#{$app_name}/}, '') if $app_name
           args[:source] = [file, line].join(':')
         end

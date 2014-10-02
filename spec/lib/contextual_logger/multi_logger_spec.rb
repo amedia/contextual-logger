@@ -102,7 +102,7 @@ describe ContextualLogger::MultiLogger do
     end
   end
 
-  context "logging with source requested in context" do
+  context "logging with source requested in context with value true" do
     before do
       subject.add_context source: true
       subject.info "Yo!"
@@ -113,10 +113,35 @@ describe ContextualLogger::MultiLogger do
     end
   end
 
+  context "logging with source requested in context with value zero" do
+    before do
+      subject.add_context source: 0
+      subject.info "Yo!"
+    end
+    it "passes message and source info on to logger" do
+      expect(logger).to have_received(:info).
+        with("Yo! {source: \"#{__FILE__}:#{__LINE__ - 4}\"}").once
+    end
+  end
+
+  context "logging with source requested in context with call stack level" do
+    before do
+      subject.add_context source: 1
+      def do_some_logging
+        subject.info "Hiya"
+      end
+      do_some_logging
+    end
+    it "passes message and source info at the requested level on to logger" do
+      expect(logger).to have_received(:info).
+        with("Hiya {source: \"#{__FILE__}:#{__LINE__ - 4}\"}").once
+    end
+  end
+
   context "logging with source requested in context and $app_name set" do
     before do
       $app_name = 'contextual-logger'
-      subject.add_context source: true
+      subject.add_context source: 0
       subject.info "Yo!"
       $app_name = nil
     end
