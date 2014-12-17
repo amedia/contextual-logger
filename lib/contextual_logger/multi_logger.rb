@@ -27,7 +27,9 @@ module ContextualLogger
         if args[:source]
           level = (args[:source] == true ? 0 : args[:source].to_i)
           file, line, _ = caller[level].split(':')
-          file.sub!(%r{^.*?/#{$app_name}/}, '') if $app_name
+          if defined?($app_config) && $app_config.app_name
+            file.sub!(%r{^.*?/#{$app_config.app_name}/}, '')
+          end
           args[:source] = [file, line].join(':')
         end
 

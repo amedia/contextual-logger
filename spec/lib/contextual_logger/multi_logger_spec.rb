@@ -138,12 +138,13 @@ describe ContextualLogger::MultiLogger do
     end
   end
 
-  context "logging with source requested in context and $app_name set" do
+  context "logging with source requested in context and $app_config.app_name set" do
+    let(:app_config) { double(:app_config, app_name: 'contextual-logger') }
     before do
-      $app_name = 'contextual-logger'
+      $app_config = app_config
       subject.add_context source: 0
       subject.info "Yo!"
-      $app_name = nil
+      $app_config = nil
     end
     it "passes message and source info on to logger, app directory truncated" do
       expect(logger).to have_received(:info).
