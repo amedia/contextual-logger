@@ -18,7 +18,7 @@ module ContextualLogger
     [:debug, :info, :warn, :error, :fatal].each do |severity|
       define_method(severity) do |message = nil, args = {}, &block|
 
-        args.merge! context(severity)
+        args = context(severity).merge(args)
 
         if (ex = args[:exception]).is_a?(Exception)
           args[:exception] = "#{ex.class.name}: #{ex.message}"

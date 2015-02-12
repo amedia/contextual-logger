@@ -152,6 +152,19 @@ describe ContextualLogger::MultiLogger do
     end
   end
 
+  context "logging with additional argument hash" do
+    before do
+      subject.add_context foo: 42, bar: "Hey"
+      subject.info "Hello", bar: "Bar", baz: "Yo"
+    end
+    it "passes additional arguments on to logger, overriding context" do
+      expect(logger).to have_received(:info).with('Hello {foo: 42, bar: "Bar", baz: "Yo"}').once
+    end
+    it "passes additional arguments on to logstash, overriding context" do
+      expect(logstash).to have_received(:info).with(message: 'Hello', foo: 42, bar: 'Bar', baz: 'Yo').once
+    end
+  end
+  
   context "logging with a block" do
     before do
       subject.info { "Foobar" }
