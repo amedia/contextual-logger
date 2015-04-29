@@ -10,6 +10,11 @@ module ContextualLogger
       clear_context
     end
 
+    def level=(level)
+      @logger.level = level
+      @logstash.level = level
+    end
+
     def initialize_clone(other)
       super
       clear_context
