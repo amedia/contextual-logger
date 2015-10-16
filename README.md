@@ -83,3 +83,21 @@ end
 # => "Failed. {exception: "SomeError: Oops!"}
 # => {"message": "Failed.", exception: "SomeError: Oops!"}
 ```
+
+## LoggerMixin
+To get a clean `logger` object with some common context in your code, you can
+include LoggerMixin. Example:
+```
+class GenderGuesser
+  include ContextualLogger::LoggerMixin
+
+  def guess(name)
+    # ...
+    logger.info "#{name} is probably #{gender}", name: name
+    # ...
+  pass
+end
+```
+
+Please note that this requires that you have setup contextual logger to the
+global `LOGGER` variable.
