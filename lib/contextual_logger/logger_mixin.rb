@@ -6,6 +6,7 @@ module ContextualLogger
     def logger
       @logger ||= LOGGER.clone # Use clone to get empty context
       @logger.add_context pid: $$, source: true
+      @logger
     end
   end
 end
