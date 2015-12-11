@@ -4,7 +4,9 @@ require "contextual_logger/version"
 module ContextualLogger
   module LoggerMixin
     def logger
-      @logger ||= LOGGER.clone # Use clone to get empty context
+      # Use clone to get empty context
+      @logger ||= (defined?(LOGGER) && LOGGER.clone) or
+        raise 'To use LoggerMixin, LOGGER needs to be set up.'
       @logger.add_context pid: $$, source: true
       @logger
     end
