@@ -5,8 +5,6 @@ Stack: Ruby
 ---
 <!--(Maintained Duplo labels above. Read more on http://info.api.no/handbook/guidelines/GitHub-guidelines.html)-->
 
-<!--(Maintained Duplo labels above. Read more on http://info.api.no/handbook/guidelines/GitHub-guidelines.html)-->
-
 # ContextualLogger
 
 This gem provides a wrapper for logging with contextual information.
