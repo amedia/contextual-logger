@@ -27,7 +27,10 @@ Or install it yourself as:
 
 ## Usage
 
-The MultiLogger class wraps logging to both a standard Logger instance
+The ContextualLogger::LogstashLogger class wraps logging to a LogstashLogger
+instance.
+
+The ContextualLogger::MultiLogger class wraps logging to both a standard Logger instance
 and a LogstashLogger instance at the same time. Both logger instances
 must be setup independently in advance.
 
@@ -38,6 +41,8 @@ shown underneath the code example.
 FILELOGGER = Logger.new(...)
 LOGSTASH   = LogStashLogger.new(...)
 
+logger = ContextualLogger::LogstashLogger.new(LOGSTASH)
+# or
 logger = ContextualLogger::MultiLogger.new(FILELOGGER, LOGSTASH)
 
 logger.info "Hello, world!"
