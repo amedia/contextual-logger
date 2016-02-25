@@ -1,8 +1,4 @@
-describe ContextualLogger::MultiLogger do
-
-  let(:logger) do
-    spy(:logger)
-  end
+describe ContextualLogger::LogstashLogger do
 
   let(:logstash) do
     spy(:logstash)
@@ -12,19 +8,8 @@ describe ContextualLogger::MultiLogger do
     double(:slow_service, fetch: "returned value")
   end
 
-  let(:app_config) { double(:app_config, app_name: 'contextual-logger') }
-
-  let(:file_path) { __FILE__.sub /^.*?\/spec\//, 'spec/' }
-
-  before do
-    $app_config = app_config
-  end
-  after do
-    $app_config = nil
-  end
-
   subject do
-    ContextualLogger::MultiLogger.new(logger, logstash)
+    ContextualLogger::LogstashLogger.new(logstash)
   end
 
   context "#add_context" do
@@ -74,9 +59,6 @@ describe ContextualLogger::MultiLogger do
       subject.add_error_context bar: "other"
       subject.info "Hello World"
     end
-    it "passes message and context on to logger" do
-      expect(logger).to have_received(:info).with('Hello World {foo: "value"}').once
-    end
     it "passes message and context on to logstash" do
       expect(logstash).to have_received(:info).with(message: 'Hello World', foo: 'value').once
     end
@@ -87,10 +69,6 @@ describe ContextualLogger::MultiLogger do
       subject.add_context foo: "value"
       subject.add_error_context bar: "other"
       subject.error "Oh no!"
-    end
-    it "passes message, context and error context on to logger" do
-      expect(logger).to have_received(:error).
-        with('Oh no! {foo: "value", bar: "other"}').once
     end
     it "passes message, context and error context on to logstash" do
       expect(logstash).to have_received(:error).
@@ -103,10 +81,6 @@ describe ContextualLogger::MultiLogger do
       subject.add_error_context exception: StandardError.new("Oopsie!")
       subject.error "Oh no!"
     end
-    it "passes message and exception info on to logger" do
-      expect(logger).to have_received(:error).
-        with('Oh no! {exception: "StandardError: Oopsie!"}').once
-    end
     it "passes message and exception info on to logstash" do
       expect(logstash).to have_received(:error).
         with(message: 'Oh no!', exception: "StandardError: Oopsie!").once
@@ -118,9 +92,9 @@ describe ContextualLogger::MultiLogger do
       subject.add_context source: true
       subject.info "Yo!"
     end
-    it "passes message and source info on to logger" do
-      expect(logger).to have_received(:info).
-        with("Yo! {source: \"#{file_path}:#{__LINE__ - 4}\"}").once
+    it "passes message and source info on to logstash" do
+      expect(logstash).to have_received(:info).
+        with(message: 'Yo!', source: "#{__FILE__}:#{__LINE__ - 4}").once
     end
   end
 
@@ -129,9 +103,9 @@ describe ContextualLogger::MultiLogger do
       subject.add_context source: 0
       subject.info "Yo!"
     end
-    it "passes message and source info on to logger" do
-      expect(logger).to have_received(:info).
-        with("Yo! {source: \"#{file_path}:#{__LINE__ - 4}\"}").once
+    it "passes message and source info on to logstash" do
+      expect(logstash).to have_received(:info).
+        with(message: 'Yo!', source: "#{__FILE__}:#{__LINE__ - 4}").once
     end
   end
 
@@ -143,21 +117,23 @@ describe ContextualLogger::MultiLogger do
       end
       do_some_logging
     end
-    it "passes message and source info at the requested level on to logger" do
-      expect(logger).to have_received(:info).
-        with("Hiya {source: \"#{file_path}:#{__LINE__ - 4}\"}").once
+    it "passes message and source info at the requested level on to logstash" do
+      expect(logstash).to have_received(:info).
+        with(message: 'Hiya', source: "#{__FILE__}:#{__LINE__ - 4}").once
     end
   end
 
   context "logging with source requested in context and $app_config.app_name set" do
+    let(:app_config) { double(:app_config, app_name: 'contextual-logger') }
     before do
+      $app_config = app_config
       subject.add_context source: 0
       subject.info "Yo!"
       $app_config = nil
     end
     it "passes message and source info on to logger, app directory truncated" do
-      expect(logger).to have_received(:info).
-        with("Yo! {source: \"spec/lib/contextual_logger/multi_logger_spec.rb:#{__LINE__ - 5}\"}").once
+      expect(logstash).to have_received(:info).
+        with(message: 'Yo!', source: "spec/lib/contextual_logger/logstash_logger_spec.rb:#{__LINE__ - 5}").once
     end
   end
 
@@ -165,9 +141,6 @@ describe ContextualLogger::MultiLogger do
     before do
       subject.add_context foo: 42, bar: "Hey"
       subject.info "Hello", bar: "Bar", baz: "Yo"
-    end
-    it "passes additional arguments on to logger, overriding context" do
-      expect(logger).to have_received(:info).with('Hello {foo: 42, bar: "Bar", baz: "Yo"}').once
     end
     it "passes additional arguments on to logstash, overriding context" do
       expect(logstash).to have_received(:info).with(message: 'Hello', foo: 42, bar: 'Bar', baz: 'Yo').once
@@ -177,10 +150,6 @@ describe ContextualLogger::MultiLogger do
   context "logging with a block" do
     before do
       subject.info { "Foobar" }
-    end
-    it "passes the value of the block on to logger" do
-      expect(logger).to have_received(:info).
-        with('Foobar').once
     end
     it "passes the value of the block on to logstash" do
       expect(logstash).to have_received(:info).
@@ -196,9 +165,6 @@ describe ContextualLogger::MultiLogger do
     end
     it "does not call the block" do
       expect(slow_service).not_to have_received(:fetch)
-    end
-    it "does not pass anything to logger" do
-      expect(logger).not_to have_received(:info)
     end
     it "does not pass anything to logstash" do
       expect(logstash).not_to have_received(:info)

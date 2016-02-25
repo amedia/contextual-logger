@@ -10,4 +10,4 @@ if ENV['COVERAGE']
   SimpleCov.start
 end
 
-require 'contextual_logger/multi_logger'
+require 'contextual_logger'
