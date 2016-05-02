@@ -11,8 +11,8 @@ module ContextualLogger
     end
 
     def level=(level)
-      @logger.level = level
-      @logstash.level = level
+      @logger.level   = level if @logger
+      @logstash.level = level if @logstash
     end
 
     def initialize_clone(other)
