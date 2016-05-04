@@ -1,15 +1,41 @@
 require "contextual_logger/version"
+require "logger"
 
 module ContextualLogger
 
   class LogstashLogger
+
+    LEVEL_MAP = {
+        debug: Logger::DEBUG,
+        info:  Logger::INFO,
+        warn:  Logger::WARN,
+        error: Logger::ERROR,
+        fatal: Logger::FATAL
+    }
+
+    SEVERITIES = LEVEL_MAP.keys
+
+    InvalidLogLevel = Class.new(StandardError)
 
     def initialize(logstash)
       @logstash = logstash
       clear_context
     end
 
-    def level=(level)
+    def level
+      @logstash.level
+    end
+
+    def level=(value)
+      level =
+        case value
+        when String, Symbol
+          LEVEL_MAP[value.downcase.to_sym]
+        when Integer
+          value
+        end
+      LEVEL_MAP.values.include?(level) or
+        raise InvalidLogLevel, "Invalid log level: #{value}"
       @logstash.level = level
     end
 
@@ -18,7 +44,7 @@ module ContextualLogger
       clear_context
     end
 
-    [:debug, :info, :warn, :error, :fatal].each do |severity|
+    SEVERITIES.each do |severity|
       define_method(severity) do |message = nil, args = {}, &block|
 
         args = context(severity).merge(args)

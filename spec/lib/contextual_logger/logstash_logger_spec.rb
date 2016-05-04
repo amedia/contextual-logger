@@ -12,6 +12,30 @@ describe ContextualLogger::LogstashLogger do
     ContextualLogger::LogstashLogger.new(logstash)
   end
 
+  context "#level=" do
+    it "accepts string values" do
+      subject.level = 'DEBUG'
+      expect(logstash).to have_received(:level=).with(Logger::DEBUG)
+      subject.level = 'warn'
+      expect(logstash).to have_received(:level=).with(Logger::WARN)
+    end
+    it "accepts symbolic values" do
+      subject.level = :info
+      expect(logstash).to have_received(:level=).with(Logger::INFO)
+      subject.level = :FATAL
+      expect(logstash).to have_received(:level=).with(Logger::FATAL)
+    end
+    it "accepts integer values" do
+      subject.level = Logger::WARN
+      expect(logstash).to have_received(:level=).with(Logger::WARN)
+    end
+    it "raises InvalidLogLevel for bad values" do
+      ['FOO', :bar, 1234, 3.14].each do |bad_value|
+        expect { subject.level = bad_value }.to raise_error(ContextualLogger::LogstashLogger::InvalidLogLevel)
+      end
+    end
+  end
+
   context "#add_context" do
     before do
       subject.add_context foo: "value", bar: "other"
