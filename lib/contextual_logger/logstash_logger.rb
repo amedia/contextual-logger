@@ -59,7 +59,7 @@ module ContextualLogger
           if defined?($app_config) && $app_config.app_name
             file.sub!(%r{^.*?/#{$app_config.app_name}/}, '')
           end
-          args[:source] = [file, line].join(':')
+          args[:code_source] = [file, line].join(':')
         end
 
         if block && @logstash.send("#{severity}?")
