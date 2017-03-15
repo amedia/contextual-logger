@@ -8,6 +8,9 @@ module ContextualLogger
       @logger ||= (defined?(LOGGER) && LOGGER.clone) or
         raise 'To use LoggerMixin, LOGGER needs to be set up.'
       @logger.add_context pid: $$, source: true
+      if $app_config
+        @logger.add_context application: $app_config.app_name
+      end
       @logger
     end
   end
