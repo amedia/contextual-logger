@@ -4,9 +4,10 @@ module ContextualLogger
 
   class MultiLogger
 
-    def initialize(logger = nil, logstash = nil)
+    def initialize(logger = nil, logstash = nil, pretty = false)
       @logger   = logger
       @logstash = logstash
+      @pretty   = pretty
       clear_context
     end
 
@@ -46,7 +47,11 @@ module ContextualLogger
         if @logger && @logger.send("#{severity}?")
           line = message.dup
           unless args.empty?
-            line << ' {' << args.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') << '}'
+            if @pretty
+              line << "\n" << args.map { |k, v| "#{k}: #{v}" }.join("\n")
+            else
+              line << ' {' << args.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') << '}'
+            end
           end
           @logger.send severity, line
         end
