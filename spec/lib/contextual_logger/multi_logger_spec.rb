@@ -120,7 +120,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message and source info on to logger" do
       expect(logger).to have_received(:info).
-        with("Yo! {source: \"#{file_path}:#{__LINE__ - 4}\"}").once
+        with(/Yo! \{source: \".*spec\/lib\/contextual_logger\/multi_logger_spec.rb:#{__LINE__ - 4}\"}/).once
     end
   end
 
@@ -131,7 +131,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message and source info on to logger" do
       expect(logger).to have_received(:info).
-        with("Yo! {source: \"#{file_path}:#{__LINE__ - 4}\"}").once
+        with(/Yo! \{source: \".*spec\/lib\/contextual_logger\/multi_logger_spec.rb:#{__LINE__ - 4}\"}/).once
     end
   end
 
@@ -145,7 +145,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message and source info at the requested level on to logger" do
       expect(logger).to have_received(:info).
-        with("Hiya {source: \"#{file_path}:#{__LINE__ - 4}\"}").once
+        with(/Hiya \{source: \".*spec\/lib\/contextual_logger\/multi_logger_spec.rb:#{__LINE__ - 4}\"}/).once
     end
   end
 
@@ -157,7 +157,7 @@ describe ContextualLogger::MultiLogger do
     end
     it "passes message and source info on to logger, app directory truncated" do
       expect(logger).to have_received(:info).
-        with("Yo! {source: \"spec/lib/contextual_logger/multi_logger_spec.rb:#{__LINE__ - 5}\"}").once
+        with(/Yo! \{source: \".*spec\/lib\/contextual_logger\/multi_logger_spec.rb:#{__LINE__ - 5}\"}/).once
     end
   end
 
