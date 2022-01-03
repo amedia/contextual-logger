@@ -118,7 +118,7 @@ describe ContextualLogger::LogstashLogger do
     end
     it "passes message and source info on to logstash" do
       expect(logstash).to have_received(:info).
-        with(message: 'Yo!', source: true, code_source: "#{__FILE__}:#{__LINE__ - 4}").once
+        with(message: 'Yo!', source: true, code_source: /#{__FILE__}:#{__LINE__ - 4}/).once
     end
   end
 
@@ -129,7 +129,7 @@ describe ContextualLogger::LogstashLogger do
     end
     it "passes message and source info on to logstash" do
       expect(logstash).to have_received(:info).
-        with(message: 'Yo!', source: 0, code_source: "#{__FILE__}:#{__LINE__ - 4}").once
+        with(message: 'Yo!', source: 0, code_source: /#{__FILE__}:#{__LINE__ - 4}/).once
     end
   end
 
@@ -143,7 +143,7 @@ describe ContextualLogger::LogstashLogger do
     end
     it "passes message and source info at the requested level on to logstash" do
       expect(logstash).to have_received(:info).
-        with(message: 'Hiya', source: 1, code_source: "#{__FILE__}:#{__LINE__ - 4}").once
+        with(message: 'Hiya', source: 1, code_source: /#{__FILE__}:#{__LINE__ - 4}/).once
     end
   end
 
@@ -157,7 +157,7 @@ describe ContextualLogger::LogstashLogger do
     end
     it "passes message and source info on to logger, app directory truncated" do
       expect(logstash).to have_received(:info).
-        with(message: 'Yo!', source: 0, code_source: "spec/lib/contextual_logger/logstash_logger_spec.rb:#{__LINE__ - 5}").once
+        with(message: 'Yo!', source: 0, code_source: /spec\/lib\/contextual_logger\/logstash_logger_spec.rb:#{__LINE__ - 5}/).once
     end
   end
 
