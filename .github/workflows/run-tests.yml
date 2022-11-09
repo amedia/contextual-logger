@@ -1,0 +1,58 @@
+name: run-tests
+on: [ push ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: amedia/github-workflows/.github/actions/slack-deploy-bot@master
+        id: slack-bot
+        with:
+          application: "contextual-logger"
+          channel-id: "CMEFQEECD"
+          color: "dbab09"
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN}}
+      - uses: amedia/github-workflows/.github/actions/slack-deploy-bot@master
+        with:
+          application: "contextual-logger"
+          channel-id: "CMEFQEECD"
+          update-ts: ${{ steps.slack-bot.outputs.update-ts }}
+          status: "Installing Gems"
+          color: "dbab09"
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN}}
+      - uses: ruby/setup-ruby@v1
+        env:
+          BUNDLE_GITHUB__COM: x-access-token:${{ secrets.AMEDIA_GODEPS_GITHUB_TOKEN }}
+        with:
+          ruby-version: '3.1'
+          bundler-cache: ${{ !env.ACT }}
+      - uses: amedia/github-workflows/.github/actions/slack-deploy-bot@master
+        with:
+          application: "contextual-logger"
+          channel-id: "CMEFQEECD"
+          update-ts: ${{ steps.slack-bot.outputs.update-ts }}
+          status: "Running tests"
+          color: "dbab09"
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN}}
+      - run: bundle exec rspec spec
+      - name: Set short SHA output
+        shell: bash
+        id: commithash
+        run: echo "sha_short=$(git rev-parse --short ${{ github.event.pull_request.head.sha || github.sha}})" >> $GITHUB_ENV
+      - uses: amedia/github-workflows/.github/actions/slack-deploy-bot@master
+        with:
+          application: "contextual-logger"
+          channel-id: "CMEFQEECD"
+          update-ts: ${{ steps.slack-bot.outputs.update-ts }}
+          status: "Finished. Update with `bundle update contextual-logger`"
+          color: "28a745"
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN}}
+      - uses: amedia/github-workflows/.github/actions/slack-deploy-bot@master
+        if: failure()
+        with:
+          application: "contextual-logger"
+          channel-id: "CMEFQEECD"
+          update-ts: ${{ steps.slack-bot.outputs.update-ts }}
+          status: "Failed"
+          color: "ff0000"
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN}}

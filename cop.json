@@ -1,9 +1,0 @@
-{
-  "ci": [
-    {
-      "name": "Run tests",
-      "preset": { "name": "ruby-test-runner", "version": "3.0.0" },
-      "slack": "#team-aid-bot"
-    }
-  ]
-}
