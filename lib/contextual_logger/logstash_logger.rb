@@ -26,6 +26,10 @@ module ContextualLogger
       @logstash.level
     end
 
+    def add(severity, msg)
+      @logstash.add(severity, msg)
+    end
+
     def level=(value)
       level =
         case value

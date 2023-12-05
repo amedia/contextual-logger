@@ -16,9 +16,20 @@ module ContextualLogger
       @logstash.level = level if @logstash
     end
 
+
+
     def initialize_clone(other)
       super
       clear_context
+    end
+
+    def add(severity, msg)
+      if @logger
+        @logger.add(severity, msg)
+      end
+      if @logstash
+        @logstash.add(severity, msg)
+      end
     end
 
     [:debug, :info, :warn, :error, :fatal].each do |severity|
